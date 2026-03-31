@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PathYatra — Coming Soon</title>
+  <meta name="description" content="PathYatra — Your Journey Companion. Something big is coming." />
+  <style>
+    :root {
+      --bg-1: #06111f;
+      --bg-2: #0b1c33;
+      --card: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.14);
+      --text: #f8fafc;
+      --muted: #c7d2e3;
+      --accent: #ff8a00;
+      --accent-2: #2dd4bf;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(45, 212, 191, 0.18), transparent 30%),
+        radial-gradient(circle at top right, rgba(255, 138, 0, 0.15), transparent 28%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2));
+      overflow-x: hidden;
+    }
+
+    .noise,
+    .glow,
+    .grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .grid {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(circle at center, black 40%, transparent 85%);
+      opacity: 0.28;
+    }
+
+    .glow::before,
+    .glow::after {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 999px;
+      filter: blur(80px);
+      opacity: 0.22;
+    }
+
+    .glow::before {
+      background: var(--accent);
+      top: -80px;
+      right: -120px;
+    }
+
+    .glow::after {
+      background: var(--accent-2);
+      bottom: -120px;
+      left: -100px;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 1040px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .hero,
+    .panel {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+    }
+
+    .hero {
+      padding: 42px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -60px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(255,138,0,0.22), transparent 65%);
+      filter: blur(10px);
+      pointer-events: none;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .logo-wrap {
+      width: 74px;
+      height: 74px;
+      border-radius: 22px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+      border: 1px solid rgba(255,255,255,0.16);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 10px 30px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    .logo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand h1 {
+      font-size: clamp(2.2rem, 4vw, 3.8rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+    }
+
+    .brand p {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255, 138, 0, 0.14);
+      border: 1px solid rgba(255, 138, 0, 0.28);
+      color: #ffe3bf;
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 22px;
+    }
+
+    .badge .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px rgba(255, 138, 0, 0.9);
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.65; }
+    }
+
+    .headline {
+      font-size: clamp(2rem, 4vw, 4.4rem);
+      line-height: 1.03;
+      letter-spacing: -0.05em;
+      max-width: 10ch;
+      font-weight: 800;
+    }
+
+    .headline span {
+      background: linear-gradient(90deg, #ffffff, #dce9ff 45%, #ffd8a8 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtext {
+      margin-top: 20px;
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.7;
+    }
+
+    .actions {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .btn {
+      appearance: none;
+      border: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-width: 148px;
+      padding: 14px 18px;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 0.98rem;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      color: #08111d;
+      background: linear-gradient(135deg, #ffffff, #ffd4a1);
+      box-shadow: 0 12px 30px rgba(255, 138, 0, 0.18);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .panel {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 22px;
+    }
+
+    .panel-top h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .panel-top p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.97rem;
+    }
+
+    .socials {
+      display: grid;
+      gap: 12px;
+    }
+
+    .social-card {
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+    }
+
+    .social-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .social-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
+      border: 1px solid rgba(255,255,255,0.12);
+      font-weight: 800;
+      color: #fff;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .social-meta strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 3px;
+    }
+
+    .social-meta span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .arrow {
+      color: rgba(255,255,255,0.55);
+      font-size: 1.2rem;
+    }
+
+    .panel-bottom {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .mini-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 920px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .hero,
+      .panel {
+        padding: 24px;
+        border-radius: 24px;
+      }
+
+      .headline {
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        padding: 18px;
+      }
+
+      .brand-row {
+        align-items: flex-start;
+      }
+
+      .logo-wrap {
+        width: 62px;
+        height: 62px;
+        border-radius: 18px;
+      }
+
+      .subtext {
+        font-size: 0.98rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .panel-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="glow"></div>
+
+  <main class="page">
+    <section class="shell">
+      <div class="hero">
+        <div class="brand-row">
+          <div class="logo-wrap">
+            <!-- Replace logo.png with your uploaded logo file -->
+            <img src="logo.png" alt="PathYatra Logo" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'font-size:1.35rem;font-weight:900;color:#fff;\'>PY</span>'" />
+          </div>
+          <div class="brand">
+            <h1>PathYatra</h1>
+            <p>Your Journey Companion</p>
+          </div>
+        </div>
+
+        <div class="badge">
+          <span class="dot"></span>
+          Coming Soon
+        </div>
+
+        <h2 class="headline"><span>Something big is on the way.</span></h2>
+
+        <p class="subtext">
+          A premium new brand is taking shape. Stay connected with PathYatra and follow the journey as we prepare for launch.
+        </p>
+
+        <div class="actions">
+          <a class="btn btn-primary" href="https://instagram.com/PathYatra" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a class="btn btn-secondary" href="https://x.com/PathYatra" target="_blank" rel="noopener noreferrer">Follow on X</a>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-top">
+          <h2>Stay Connected</h2>
+          <p>
+            Follow PathYatra across our official channels for updates, announcements, and early brand moments.
+          </p>
+        </div>
+
+        <div class="socials">
+          <a class="social-card" href="https://instagram.com/PathYatra" target="_blank" rel="noopener noreferrer">
+            <div class="social-left">
+              <div class="icon">IG</div>
+              <div class="social-meta">
+                <strong>Instagram</strong>
+                <span>@PathYatra</span>
+              </div>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="social-card" href="https://x.com/PathYatra" target="_blank" rel="noopener noreferrer">
+            <div class="social-left">
+              <div class="icon">X</div>
+              <div class="social-meta">
+                <strong>X</strong>
+                <span>@PathYatra</span>
+              </div>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="social-card" href="https://youtube.com/@PathYatraApp" target="_blank" rel="noopener noreferrer">
+            <div class="social-left">
+              <div class="icon">YT</div>
+              <div class="social-meta">
+                <strong>YouTube</strong>
+                <span>@PathYatraApp</span>
+              </div>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+
+          <a class="social-card" href="mailto:hello@pathyatra.com">
+            <div class="social-left">
+              <div class="icon">@</div>
+              <div class="social-meta">
+                <strong>Email</strong>
+                <span>hello@pathyatra.com</span>
+              </div>
+            </div>
+            <div class="arrow">→</div>
+          </a>
+        </div>
+
+        <div class="panel-bottom">
+          <span>© 2026 PathYatra. All rights reserved.</span>
+          <span class="mini-pill">PathYatra.com</span>
+        </div>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>
