@@ -500,29 +500,12 @@
         <div class="panel-bottom">
   <span>© 2026 PathYatra. All rights reserved.</span>
   <span class="mini-pill">PathYatra.com</span>
-  <span class="mini-pill">Visits: <span id="visitor-count">Loading...</span></span>
+
 </div>
       </aside>
     </section>
   </main>
 
-  <script>
-  async function updateVisitorCount() {
-    try {
-      const namespace = "pathyatra";
-      const key = "landing-page-visits";
-
-      const response = await fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`);
-      const data = await response.json();
-
-      document.getElementById("visitor-count").textContent = data.value;
-    } catch (error) {
-      document.getElementById("visitor-count").textContent = "Unavailable";
-      console.error("Visitor counter error:", error);
-    }
-  }
-
-  updateVisitorCount();
-</script>
+ 
 </body>
 </html>
